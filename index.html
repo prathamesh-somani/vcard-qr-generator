@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital vCard QR Generator</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+</head>
+
+<body class="bg-gray-100 p-6">
+
+<div class="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+
+<h1 class="text-2xl font-bold mb-4 text-center">📇 vCard QR Generator</h1>
+
+<div id="formSection">
+    <input id="name" placeholder="Full Name" class="w-full p-2 mb-3 border rounded">
+    <input id="phone" placeholder="Phone Number" class="w-full p-2 mb-3 border rounded">
+    <input id="email" placeholder="Email" class="w-full p-2 mb-3 border rounded">
+    <input id="company" placeholder="Company" class="w-full p-2 mb-3 border rounded">
+
+    <button onclick="generateQR()" 
+        class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+        Generate QR Code
+    </button>
+</div>
+
+<div id="qrSection" class="hidden text-center mt-6">
+    <canvas id="qr"></canvas>
+    <p class="mt-4 text-sm text-gray-600">Scan this QR to view details</p>
+</div>
+
+<div id="displaySection" class="hidden">
+    <h2 class="text-xl font-bold mb-4 text-center">Contact Details</h2>
+    <p><strong>Name:</strong> <span id="dname"></span></p>
+    <p><strong>Phone:</strong> <span id="dphone"></span></p>
+    <p><strong>Email:</strong> <span id="demail"></span></p>
+    <p><strong>Company:</strong> <span id="dcompany"></span></p>
+</div>
+
+</div>
+
+<script>
+
+// Check if opened via QR link
+const params = new URLSearchParams(window.location.search);
+
+if (params.has("data")) {
+    const decoded = JSON.parse(atob(params.get("data")));
+
+    document.getElementById("formSection").style.display = "none";
+    document.getElementById("qrSection").style.display = "none";
+    document.getElementById("displaySection").classList.remove("hidden");
+
+    document.getElementById("dname").innerText = decoded.name;
+    document.getElementById("dphone").innerText = decoded.phone;
+    document.getElementById("demail").innerText = decoded.email;
+    document.getElementById("dcompany").innerText = decoded.company;
+}
+
+function generateQR() {
+    const data = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value,
+        company: document.getElementById("company").value
+    };
+
+    const encoded = btoa(JSON.stringify(data));
+
+    const url = window.location.origin + window.location.pathname + "?data=" + encoded;
+
+    document.getElementById("qrSection").classList.remove("hidden");
+
+    QRCode.toCanvas(document.getElementById("qr"), url, function (error) {
+        if (error) console.error(error);
+    });
+}
+
+</script>
+
+</body>
+</html>
