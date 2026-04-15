@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital vCard QR Generator</title>
+<title>QR Contact Card</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -14,13 +14,16 @@
 
 <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
 
-<h1 class="text-2xl font-bold mb-4 text-center">📇 vCard QR Generator</h1>
-
+<!-- FORM SECTION -->
 <div id="formSection">
+    <h1 class="text-2xl font-bold mb-4 text-center">Create Your QR Contact</h1>
+
     <input id="name" placeholder="Full Name" class="w-full p-2 mb-3 border rounded">
+    <input id="job" placeholder="Job Title" class="w-full p-2 mb-3 border rounded">
     <input id="phone" placeholder="Phone Number" class="w-full p-2 mb-3 border rounded">
     <input id="email" placeholder="Email" class="w-full p-2 mb-3 border rounded">
     <input id="company" placeholder="Company" class="w-full p-2 mb-3 border rounded">
+    <input id="address" placeholder="Address" class="w-full p-2 mb-3 border rounded">
 
     <button onclick="generateQR()" 
         class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
@@ -28,24 +31,31 @@
     </button>
 </div>
 
+<!-- QR SECTION -->
 <div id="qrSection" class="hidden text-center mt-6">
     <canvas id="qr"></canvas>
-    <p class="mt-4 text-sm text-gray-600">Scan this QR to view details</p>
+    <p class="mt-3 text-sm text-gray-500">Scan to view contact</p>
 </div>
 
+<!-- DISPLAY SECTION (NO TITLE HERE) -->
 <div id="displaySection" class="hidden">
-    <h2 class="text-xl font-bold mb-4 text-center">Contact Details</h2>
-    <p><strong>Name:</strong> <span id="dname"></span></p>
-    <p><strong>Phone:</strong> <span id="dphone"></span></p>
-    <p><strong>Email:</strong> <span id="demail"></span></p>
-    <p><strong>Company:</strong> <span id="dcompany"></span></p>
+
+    <div class="bg-white p-6 rounded-2xl shadow-lg space-y-2">
+        <p><strong>Name:</strong> <span id="dname"></span></p>
+        <p><strong>Job Title:</strong> <span id="djob"></span></p>
+        <p><strong>Phone:</strong> <span id="dphone"></span></p>
+        <p><strong>Email:</strong> <span id="demail"></span></p>
+        <p><strong>Company:</strong> <span id="dcompany"></span></p>
+        <p><strong>Address:</strong> <span id="daddress"></span></p>
+    </div>
+
 </div>
 
 </div>
 
 <script>
 
-// Check if opened via QR link
+// CHECK IF OPENED FROM QR
 const params = new URLSearchParams(window.location.search);
 
 if (params.has("data")) {
@@ -55,18 +65,23 @@ if (params.has("data")) {
     document.getElementById("qrSection").style.display = "none";
     document.getElementById("displaySection").classList.remove("hidden");
 
-    document.getElementById("dname").innerText = decoded.name;
-    document.getElementById("dphone").innerText = decoded.phone;
-    document.getElementById("demail").innerText = decoded.email;
-    document.getElementById("dcompany").innerText = decoded.company;
+    document.getElementById("dname").innerText = decoded.name || "";
+    document.getElementById("djob").innerText = decoded.job || "";
+    document.getElementById("dphone").innerText = decoded.phone || "";
+    document.getElementById("demail").innerText = decoded.email || "";
+    document.getElementById("dcompany").innerText = decoded.company || "";
+    document.getElementById("daddress").innerText = decoded.address || "";
 }
 
+// GENERATE QR
 function generateQR() {
     const data = {
         name: document.getElementById("name").value,
+        job: document.getElementById("job").value,
         phone: document.getElementById("phone").value,
         email: document.getElementById("email").value,
-        company: document.getElementById("company").value
+        company: document.getElementById("company").value,
+        address: document.getElementById("address").value
     };
 
     const encoded = btoa(JSON.stringify(data));
